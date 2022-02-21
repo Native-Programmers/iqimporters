@@ -1,0 +1,17 @@
+const String HomeRoute = '/';
+const String WrapperRoute = '/wrapper';
+const String LoginRoute = '/login';
+const String SignupRoute = '/signup';
+const String CartRoute = '/cart';
+const String LuckyDrawRoute = '/draw';
+const String OTPRoute = '/auth';
+const String BillRoute = '/billing';
+const String ProfileRoute = '/profile';
+const String ProductRoute = '/details';
+const String WishListRoute = '/wish';
+const String WinnerScreenRoute = '/winner';
+const String CheckoutRoute = '/checkout';
+const String CatalogRoute = '/catalog';
+const String ForgotRoute = '/forget';
+const String ErrorsRoute = '/errors';
+const String AllProducts = '/allproducts';

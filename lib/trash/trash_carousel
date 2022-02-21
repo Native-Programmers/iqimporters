@@ -1,0 +1,128 @@
+
+                              if (FirebaseFirestore.instance
+                                .collection("userinfo")
+                                .doc(FirebaseAuth
+                                    .instance.currentUser?.uid)
+                                .get() !=
+                            null) {
+                          FirebaseFirestore.instance
+                              .collection("userinfo")
+                              .doc(FirebaseAuth.instance.currentUser?.uid
+                                  .toString())
+                              .set({
+                            'name': name.text,
+                            'email': emailaddress.text,
+                            'mobile': ph_no,
+                            'city': city.text,
+                            'address': address.text,
+                            'zip': zip.text,
+                          });
+                        } else {
+                          FirebaseFirestore.instance
+                              .collection("userinfo")
+                              .doc(FirebaseAuth.instance.currentUser?.uid)
+                              .update(
+                                'name': name.text,
+                            'email': emailaddress.text,
+                            'mobile': ph_no,
+                            'city': city.text,
+                            'address': address.text,
+                            'zip': zip.text,
+                              );
+                        }
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(top: 65),
+                              child: CircleAvatar(
+                                backgroundColor: const Color(0xFF454E5F),
+                                child: SizedBox(
+                                    height: 120,
+                                    width: 130,
+                                    child: Image.asset('assets/images/logo.png')),
+                                maxRadius: 80,
+                                minRadius: 80,
+                              ),
+                            ),
+                            const Divider(
+                              height: 50,
+                              color: Colors.transparent,
+                            ),
+                            SingleChildScrollView(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+                                margin: const EdgeInsets.symmetric(horizontal: 10),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedBox(
+                                      width: (kIsWeb
+                                          ? MediaQuery.of(context).size.width / 4
+                                          : MediaQuery.of(context).size.width),
+                                      child: InternationalPhoneNumberInput(
+                                        onInputChanged: (PhoneNumber number) {
+                                          print(number.phoneNumber);
+                                        },
+                                        onInputValidated: (bool value) {
+                                          print(value);
+                                        },
+                                        selectorConfig: const SelectorConfig(
+                                          selectorType: PhoneInputSelectorType.DIALOG,
+                                        ),
+                                        ignoreBlank: false,
+                                        autoValidateMode: AutovalidateMode.onUserInteraction,
+                                        selectorTextStyle: const TextStyle(color: Colors.black),
+                                        initialValue: number,
+                                        textFieldController: mobile_no,
+                                        formatInput: true,
+                                        keyboardType: const TextInputType.numberWithOptions(
+                                            signed: true, decimal: true),
+                                        inputBorder: const OutlineInputBorder(),
+                                        onSaved: (PhoneNumber number) {
+                                          phone = number.toString();
+                                        },
+                                      ),
+                                    ),
+                                    const Divider(
+                                      height: 50,
+                                      color: Colors.transparent,
+                                    ),
+                                    SizedBox(
+                                      width: (kIsWeb
+                                          ? MediaQuery.of(context).size.width / 5
+                                          : MediaQuery.of(context).size.width / 2),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          if (phone.isNotEmpty) {
+                                            Navigator.of(context).push(MaterialPageRoute(
+                                                builder: (context) => OTP(
+                                                      phone: phone,
+                                                    )));
+                                          } else {
+                                            const ScaffoldMessenger(
+                                              child: SnackBar(
+                                                content: Text("Please add a phone number"),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: const [
+                                            Icon(Icons.phone),
+                                            VerticalDivider(
+                                              width: 10,
+                                              color: Colors.transparent,
+                                            ),
+                                            Text("Send Verification"),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),

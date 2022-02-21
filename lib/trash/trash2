@@ -1,0 +1,34 @@
+ BlocBuilder<WishlistBloc, WishlistState>(
+        builder: (context, state) {
+          if (state is WishlistLoading){
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          else if (state is WishlistLoaded){
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 1, childAspectRatio: 2.4),
+              itemCount: state.wishlist.products.length,
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+              itemBuilder: (BuildContext context, int index) {
+                return Center(
+                    child: ProductCards(
+                      product: state.wishlist.products[index],
+                      widthFactor: 1.15,
+                      factor: 1.25,
+                      styles:BoxFit.contain,
+                      isWishList: true,
+                    ));
+              },
+            );
+          }
+          else {
+            return Center(
+              child: Text('Something went Wrong',
+              style: Theme.of(context).textTheme.headline3!.copyWith(fontWeight: FontWeight.bold),
+              ),
+            );
+          }
+        }
+      ),

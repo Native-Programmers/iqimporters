@@ -1,0 +1,12 @@
+export 'home/home_screen.dart';
+export 'cart/cart_screen.dart';
+export 'wishlist/wishlist.dart';
+export 'profile/profile.dart';
+export 'bill/billing_screen.dart';
+export 'product/details_screen.dart';
+export 'bill/checkout.dart';
+export 'all_products/catalog.dart';
+export 'error/error.dart';
+export 'auth/login.dart';
+export 'auth/signup.dart';
+export 'auth/otp.dart';

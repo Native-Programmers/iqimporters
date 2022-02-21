@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "302895661678",
+    "project_id": "iqimporter-54321",
+    "storage_bucket": "iqimporter-54321.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:302895661678:android:df40a2ae10327d12f05c7f",
+        "android_client_info": {
+          "package_name": "com.nativeprogrammers.iqimporter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "302895661678-g7lvvvat7upnnfqte1f9v4plg6308sfo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nativeprogrammers.iqimporter",
+            "certificate_hash": "9de928f3133ad6805a6c41dcbd4d1f30be58efc6"
+          }
+        },
+        {
+          "client_id": "302895661678-d3lfngs1teesde69iu0ech0qgou083gh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1xlDoBci2TzMHnnHfVM6iPzbttk00RKw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "302895661678-d3lfngs1teesde69iu0ech0qgou083gh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

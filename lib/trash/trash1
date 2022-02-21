@@ -1,0 +1,121 @@
+return Scaffold(
+              appBar: const CustomAppBar(title: 'IQ Importer'),
+              bottomNavigationBar: const custom_btmbar(),
+              body: ListView(
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        height: (kIsWeb && (width > height) ? 500 : 180),
+                        child: BlocBuilder<BannersBloc, BannersState>(
+                          builder: (context, state) {
+                            if (state is BannersLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (state is BannersLoaded) {
+                              return Swiper(
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Image.network(
+                                      state.banners[index].imageUrl,
+                                      fit: BoxFit.fill,
+                                      height: (kIsWeb ? 500 : 180),
+                                      width: double.infinity);
+                                },
+                                autoplay: true,
+                                itemCount: state.banners.length,
+                                scrollDirection: Axis.horizontal,
+                                pagination: const SwiperPagination(
+                                    alignment: Alignment.centerRight),
+                                control: const SwiperControl(),
+                              );
+                            } else {
+                              return Center(
+                                child: Text(
+                                  'Chech Your Network Connection',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6!
+                                      .copyWith(fontWeight: FontWeight.bold),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const SectionTitle(title: 'SUB-CATEGORIES'),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 15.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.blueAccent),
+                              child: const Text(
+                                'View All Products',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 14),
+                              ),
+                              onPressed: () {
+                                // Navigator.pushNamed(context, AllProductsScreen.routeName);
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 100,
+                        width: double.infinity,
+                        child: FirestoreListView(
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: true,
+                            query: subCategories.where('uid',
+                                isEqualTo: category.id),
+                            itemBuilder: (context, snapshot) {
+                              if (snapshot.exists) {
+                                return SubCategoryCard(
+                                  subCategories:
+                                      SubCategories.fromSnapShot(snapshot),
+                                );
+                              } else {
+                                return const Center(
+                                    child: Text('No Sub Categories Exist'));
+                              }
+                            }),
+                      ),
+                      const SectionTitle(title: 'PRODUCTS'),
+                      SizedBox(
+                        width: double.infinity,
+                        child: GridView.builder(
+                          itemCount: snapshot.docs.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: (kIsWeb ? 3 : 2),
+                                  childAspectRatio: 1.5),
+                          itemBuilder: (context, index) {
+                            if (snapshot.hasMore &&
+                                index + 1 == snapshot.docs.length) {
+                              snapshot.fetchMore();
+                            }
+
+                            final product = snapshot.docs[index].data();
+
+                            return Center(
+                              child: ProductCards(
+                                product:
+                                    Product.fromSnapshot(snapshot.docs[index]),
+                              ),
+                              widthFactor: 2.2,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );

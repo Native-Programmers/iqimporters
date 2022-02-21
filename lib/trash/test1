@@ -1,0 +1,55 @@
+FutureBuilder<DocumentSnapshot>(
+        future: ref.get(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Container(
+                color: Colors.white, child: const Text("Something went wrong"));
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              body: Container(
+                color: Colors.white,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            );
+          } else if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
+            
+          } else {
+            print(snapshot.error);
+            return const Scaffold(
+              backgroundColor: Colors.white,
+              body: Center(
+                child: Text("Please Check Internet Connection"),
+              ),
+            );
+          }
+        },
+      ),
+
+      DropzoneView(
+                                  operation: DragOperation.copy,
+                                  cursor: CursorType.grab,
+                                  onCreated: (ctrl) =>
+                                      _dropzoneController = ctrl,
+                                  onLoaded: () => print('Zone 1 loaded'),
+                                  onError: (ev) => print('Zone 1 error: $ev'),
+                                  onHover: () {
+                                    setState(() {
+                                      dropzone_color = Colors.lightBlue;
+                                    });
+                                    print('Zone 1 hovered');
+                                  },
+                                  onLeave: () {
+                                    setState(() {
+                                      dropzone_color = Colors.blue;
+                                    });
+                                    
+                                  },
+                                  onDrop: (event) async {
+                                    acceptFiles(event);
+                                  },
+                                ),

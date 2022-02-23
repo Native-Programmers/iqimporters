@@ -20,6 +20,7 @@ import 'package:qbazar/repositories/categories/category_repository.dart';
 import 'package:qbazar/repositories/checkout/checkout_repository.dart';
 import 'package:qbazar/repositories/product/product_repository.dart';
 import 'package:qbazar/services/auth_service.dart';
+import 'package:qbazar/widgets/restart.dart';
 import 'blocs/cart/cart_bloc.dart';
 import 'blocs/wishlist/wishlist_bloc.dart';
 import 'config/theme.dart';
@@ -55,7 +56,11 @@ Future<void> main() async {
       ?.createNotificationChannel(channel);
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true, badge: true, sound: false);
-  runApp(const MyApp());
+  runApp(
+    RestartWidget(
+      child: const MyApp(),
+    ),
+  );
   configLoading();
 }
 

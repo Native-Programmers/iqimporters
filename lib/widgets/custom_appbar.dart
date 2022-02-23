@@ -4,11 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:qbazar/models/product_model.dart';
 import 'package:qbazar/services/auth_service.dart';
+import 'package:qbazar/widgets/restart.dart';
+import 'package:qbazar/wrapper/wrapper.dart';
 import 'package:search_page/search_page.dart';
 
 class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
@@ -22,6 +25,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    CustomPopupMenuController _controller = CustomPopupMenuController();
     return AppBar(
         centerTitle: true,
         elevation: 0,
@@ -121,6 +125,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
                         InkWell(
                           onTap: () {
                             Get.offAndToNamed('/');
+                            _controller.hideMenu();
                           },
                           child: const ListTile(
                             title: Text('Home'),
@@ -131,6 +136,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
                         InkWell(
                           onTap: () {
                             Get.toNamed('/cart');
+                            _controller.hideMenu();
                           },
                           child: const ListTile(
                             title: Text('Cart'),
@@ -146,11 +152,13 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
                               Get.snackbar(
                                 'Login Required',
                                 'Please login to add to wishList',
+                                borderRadius: 0,
                                 backgroundColor: Colors.blueGrey,
                                 colorText: Colors.white,
                               );
                             } else {
                               Get.toNamed('/wish');
+                              _controller.hideMenu();
                             }
                           },
                           child: const ListTile(
@@ -164,6 +172,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
                         InkWell(
                           onTap: () {
                             Get.toNamed('/wrapper');
+                            _controller.hideMenu();
                           },
                           child: const ListTile(
                             title: Text('User Profile'),
@@ -176,7 +185,35 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
                         (FirebaseAuth.instance.currentUser != null
                             ? InkWell(
                                 onTap: () {
-                                  FirebaseAuth.instance.signOut();
+                                  showDialog(
+                                      context: context,
+                                      builder: (_) => const AlertDialog(
+                                            backgroundColor: Colors.transparent,
+                                            elevation: 0,
+                                            content: SpinKitCircle(
+                                              color: Colors.blueGrey,
+                                            ),
+                                          ));
+                                  FirebaseAuth.instance.signOut().then((value) {
+                                    Navigator.pop(context);
+                                    Get.snackbar(
+                                      'Success',
+                                      'Logged out successfully',
+                                      backgroundColor: Colors.green,
+                                      colorText: Colors.white,
+                                      borderRadius: 0,
+                                    );
+                                    RestartWidget.restartApp(context);
+                                  }).onError((error, stackTrace) {
+                                    Navigator.pop(context);
+                                    Get.snackbar(
+                                      'Error',
+                                      'Unable to logout',
+                                      colorText: Colors.white,
+                                      backgroundColor: Colors.red,
+                                      borderRadius: 0,
+                                    );
+                                  });
                                 },
                                 child: const ListTile(
                                   title: Text('Logout'),
@@ -188,7 +225,8 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
                               )
                             : InkWell(
                                 onTap: () {
-                                  Get.toNamed('/wrapper');
+                                  Get.toNamed(Wrapper.routeName);
+                                  _controller.hideMenu();
                                 },
                                 child: const ListTile(
                                   title: Text('Sign In'),
@@ -206,92 +244,8 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
             },
             pressType: PressType.singleClick,
             verticalMargin: -10,
+            controller: _controller,
           )
-          // PopupMenuButton(
-          //   //don't specify icon if you want 3 dot menu
-          //   color: Colors.white10,
-
-          //   itemBuilder: (context) => [
-          // PopupMenuItem<int>(
-          //   child: InkWell(
-          //     onTap: () {
-          //       Get.toEnd(() => '/');
-          //     },
-          //     child: const ListTile(
-          //       title: Text('Home'),
-          //       leading: Icon(CupertinoIcons.house_fill, color: Colors.blue),
-          //     ),
-          //   ),
-          // ),
-          // PopupMenuItem<int>(
-          //   child: InkWell(
-          //     onTap: () {
-          //       Get.toNamed('/cart');
-          //     },
-          //     child: const ListTile(
-          //       title: Text('Cart'),
-          //       leading: Icon(
-          //         CupertinoIcons.cart_fill,
-          //         color: Colors.amber,
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // PopupMenuItem<int>(
-          //   child: InkWell(
-          //     onTap: () {
-          //       Get.toNamed('/wish');
-          //     },
-          //     child: const ListTile(
-          //       title: Text('WishList'),
-          //       leading: Icon(
-          //         CupertinoIcons.heart_fill,
-          //         color: Colors.red,
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // PopupMenuItem<int>(
-          //   child: InkWell(
-          //     onTap: () {
-          //       Get.toNamed('/wrapper');
-          //     },
-          //     child: const ListTile(
-          //       title: Text('User Profile'),
-          //       leading: Icon(CupertinoIcons.profile_circled),
-          //     ),
-          //   ),
-          // ),
-          //     PopupMenuItem<int>(
-          //       child: (FirebaseAuth.instance.currentUser != null
-          //           ? InkWell(
-          //               onTap: () {
-          //                 FirebaseAuth.instance.signOut();
-          //               },
-          //               child: const ListTile(
-          //                 title: Text('Logout'),
-          //                 leading: Icon(
-          //                   Icons.logout,
-          //                   color: Colors.red,
-          //                 ),
-          //               ),
-          //             )
-          //           : InkWell(
-          //               onTap: () {
-          //                 Get.toNamed('/wrapper');
-          //               },
-          //               child: const ListTile(
-          //                 title: Text('Sign In'),
-          //                 leading: Icon(
-          //                   Icons.login,
-          //                   color: Colors.green,
-          //                 ),
-          //               ),
-          //             )),
-          //     ),
-          //   ],
-          // ),
-          //   ],
         ]);
   }
 

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:qbazar/services/auth_service.dart';
+import 'package:qbazar/widgets/restart.dart';
 
 var email = TextEditingController();
 var password = TextEditingController();
@@ -214,6 +215,8 @@ class _LoginState extends State<Login> {
                                                       .then((value) {
                                                     email.text = '';
                                                     password.text = '';
+                                                    RestartWidget.restartApp(
+                                                        context);
                                                   }).onError(
                                                           (error, stackTrace) {
                                                     Get.snackbar('Error',
@@ -234,7 +237,11 @@ class _LoginState extends State<Login> {
                                     child: SignInButton(
                                       Buttons.Google,
                                       onPressed: () async {
-                                        await authService.handleSignIn();
+                                        await authService
+                                            .handleSignIn()
+                                            .then((value) {
+                                          RestartWidget.restartApp(context);
+                                        });
                                       },
                                     ),
                                   ),

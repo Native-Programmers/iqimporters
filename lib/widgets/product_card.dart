@@ -56,8 +56,10 @@ class ProductCards extends StatelessWidget {
         hoverColor: Colors.transparent,
         focusColor: Colors.transparent,
         onTap: () {
-          // Navigator.pushNamed(context, '/details', arguments: product);
-          Get.to(DetailsScreen(product: product));
+          Navigator.pushNamed(context, DetailsScreen.routeName,
+              arguments: product);
+
+          // Get.to(DetailsScreen(product: product));
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -98,58 +100,80 @@ class ProductCards extends StatelessWidget {
                   right: -60,
                   top: -60,
                   child: InkWell(
-                      hoverColor: Colors.transparent,
-                      focusColor: Colors.transparent,
-                      onTap: () {
-                        if (FirebaseAuth.instance.currentUser == null) {
-                          Get.snackbar(
-                              'Error', 'Pleae login to access wishlist');
+                    hoverColor: Colors.transparent,
+                    focusColor: Colors.transparent,
+                    onTap: () {
+                      if (FirebaseAuth.instance.currentUser == null) {
+                        Get.snackbar('Error', 'Pleae login to access wishlist',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white);
+                      } else {
+                        if (product.wishList.contains(Uinstance!.uid)) {
+                          removeFromWishList(
+                            product.uid,
+                            Uinstance!.uid,
+                            product.wishList,
+                            UserWishList,
+                          );
                         } else {
-                          if (product.wishList.contains(Uinstance!.uid)) {
-                            removeFromWishList(
-                              product.uid,
-                              Uinstance!.uid,
-                              product.wishList,
-                              UserWishList,
-                            );
-                          } else {
-                            addToWishList(
-                              product.uid,
-                              Uinstance!.uid,
-                              product.wishList,
-                              UserWishList,
-                            );
-                          }
+                          addToWishList(
+                            product.uid,
+                            Uinstance!.uid,
+                            product.wishList,
+                            UserWishList,
+                          );
                         }
-                      },
-                      child: AvatarGlow(
-                        glowColor: Colors.red,
-                        endRadius: 90.0,
-                        duration: const Duration(milliseconds: 2000),
-                        repeat: (product.wishList.contains(Uinstance!.uid)
-                            ? false
-                            : true),
-                        showTwoGlows: (product.wishList.contains(Uinstance!.uid)
-                            ? false
-                            : true),
-                        repeatPauseDuration: const Duration(milliseconds: 100),
-                        child: Material(
-                          // Replace this child with your own
-                          elevation: 8.0,
-                          shape: const CircleBorder(),
-                          child: CircleAvatar(
-                            backgroundColor: Colors.grey[100],
-                            child: Icon(
-                              Icons.favorite,
-                              size: 10,
-                              color: (product.wishList.contains(Uinstance!.uid)
-                                  ? Colors.red
-                                  : Colors.grey),
+                      }
+                    },
+                    child: (Uinstance != null
+                        ? AvatarGlow(
+                            glowColor: Colors.red,
+                            endRadius: 90.0,
+                            duration: const Duration(milliseconds: 2000),
+                            repeat: (product.wishList.contains(Uinstance!.uid)
+                                ? false
+                                : true),
+                            showTwoGlows:
+                                (product.wishList.contains(Uinstance!.uid)
+                                    ? false
+                                    : true),
+                            repeatPauseDuration:
+                                const Duration(milliseconds: 100),
+                            child: Material(
+                              // Replace this child with your own
+                              elevation: 8.0,
+                              shape: const CircleBorder(),
+                              child: CircleAvatar(
+                                backgroundColor: Colors.grey[100],
+                                child: Icon(
+                                  Icons.favorite,
+                                  size: 10,
+                                  color:
+                                      (product.wishList.contains(Uinstance!.uid)
+                                          ? Colors.red
+                                          : Colors.grey),
+                                ),
+                                radius: 20.0,
+                              ),
                             ),
-                            radius: 20.0,
-                          ),
-                        ),
-                      )),
+                          )
+                        : AvatarGlow(
+                            endRadius: 0.0,
+                            child: Material(
+                              elevation: 8.0,
+                              shape: const CircleBorder(),
+                              child: CircleAvatar(
+                                backgroundColor: Colors.grey[100],
+                                child: const Icon(
+                                  Icons.favorite,
+                                  size: 10,
+                                  color: Colors.grey,
+                                ),
+                                radius: 20.0,
+                              ),
+                            ),
+                          )),
+                  ),
                 ),
               ],
             ),

@@ -7,10 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:qbazar/blocs/cart/cart_bloc.dart';
-import 'package:qbazar/blocs/wishlist/wishlist_bloc.dart';
 import 'package:qbazar/models/product_model.dart';
 import 'package:qbazar/screens/cart/cart_screen.dart';
 import 'package:qbazar/widgets/widgets.dart';
+import 'package:qbazar/wrapper/wrapper.dart';
 
 var rating = 3.00;
 
@@ -61,35 +61,42 @@ class DetailsScreen extends StatelessWidget {
                           Get.currentRoute + Get.parameters['id'].toString()));
                 },
               ),
-              IconButton(
-                icon: Icon(
-                  Icons.favorite,
-                  color: (product.wishList.contains(Uinstance!.uid)
-                      ? Colors.red
-                      : Colors.white),
-                ),
-                onPressed: () {
-                  if (FirebaseAuth.instance.currentUser == null) {
-                    Get.snackbar('Error', 'Pleae login to access wishlist');
-                  } else {
-                    if (product.wishList.contains(Uinstance!.uid)) {
-                      removeFromWishList(
-                        product.uid,
-                        Uinstance!.uid,
-                        product.wishList,
-                        UserWishList,
-                      );
-                    } else {
-                      addToWishList(
-                        product.uid,
-                        Uinstance!.uid,
-                        product.wishList,
-                        UserWishList,
-                      );
-                    }
-                  }
-                },
-              ),
+              (Uinstance != null
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.favorite,
+                        color: (product.wishList.contains(Uinstance!.uid)
+                            ? Colors.red
+                            : Colors.white),
+                      ),
+                      onPressed: () {
+                        if (FirebaseAuth.instance.currentUser == null) {
+                          Get.snackbar(
+                              'Error', 'Pleae login to access wishlist');
+                        } else {
+                          if (product.wishList.contains(Uinstance!.uid)) {
+                            removeFromWishList(
+                              product.uid,
+                              Uinstance!.uid,
+                              product.wishList,
+                              UserWishList,
+                            );
+                          } else {
+                            addToWishList(
+                              product.uid,
+                              Uinstance!.uid,
+                              product.wishList,
+                              UserWishList,
+                            );
+                          }
+                        }
+                      },
+                    )
+                  : IconButton(
+                      onPressed: () {
+                        Get.toNamed(Wrapper.routeName);
+                      },
+                      icon: const Icon(Icons.login_outlined))),
               BlocBuilder<CartBloc, CartState>(
                 builder: (context, state) {
                   return ElevatedButton(

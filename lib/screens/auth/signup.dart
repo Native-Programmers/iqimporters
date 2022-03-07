@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:qbazar/services/auth_service.dart';
@@ -52,9 +53,7 @@ class _SignUpState extends State<SignUp> {
                       margin: const EdgeInsets.only(top: 50),
                       height: (kIsWeb && (width > height) ? 150 : 100),
                       width: (kIsWeb && (width > height) ? 150 : 100),
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Image.asset('assets/images/logo.png')),
+                      child: Image.asset('assets/images/logo.png'),
                     ),
                   ),
                   Container(
@@ -196,8 +195,21 @@ class _SignUpState extends State<SignUp> {
                                                 .validate()) {
                                               if (password.text ==
                                                   con_password.text) {
-                                                Get.snackbar('Wait',
-                                                    'Data is being processed.');
+                                                showDialog(
+                                                    barrierDismissible: false,
+                                                    context: context,
+                                                    builder: (_) =>
+                                                        const AlertDialog(
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .transparent,
+                                                          elevation: 0,
+                                                          content:
+                                                              SpinKitCubeGrid(
+                                                            color: Colors
+                                                                .blueAccent,
+                                                          ),
+                                                        ));
                                                 await authService
                                                     .createUserWithEmailAndPassword(
                                                   email.text,
@@ -205,6 +217,7 @@ class _SignUpState extends State<SignUp> {
                                                   context,
                                                 )
                                                     .then((value) {
+                                                  Navigator.pop(context);
                                                   email.text = '';
                                                   password.text = '';
                                                   con_password.text = '';
@@ -218,6 +231,7 @@ class _SignUpState extends State<SignUp> {
                                                             colorText:
                                                                 Colors.white));
                                               } else {
+                                                Navigator.pop(context);
                                                 Get.snackbar('Error',
                                                     "Passwords don't match.",
                                                     backgroundColor: Colors.red,

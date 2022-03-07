@@ -8,9 +8,9 @@ import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:qbazar/blocs/cart/cart_bloc.dart';
-import 'package:qbazar/blocs/wishlist/wishlist_bloc.dart';
 import 'package:qbazar/models/models.dart';
 import 'package:qbazar/screens/screens.dart';
+import 'package:qbazar/wrapper/wrapper.dart';
 
 final bool colors = true;
 final Finstance = FirebaseFirestore.instance;
@@ -56,10 +56,7 @@ class ProductCards extends StatelessWidget {
         hoverColor: Colors.transparent,
         focusColor: Colors.transparent,
         onTap: () {
-          Navigator.pushNamed(context, DetailsScreen.routeName,
-              arguments: product);
-
-          // Get.to(DetailsScreen(product: product));
+          Get.to(DetailsScreen(product: product));
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -96,37 +93,38 @@ class ProductCards extends StatelessWidget {
                     fit: BoxFit.contain,
                   ),
                 ),
-                Positioned(
-                  right: -60,
-                  top: -60,
-                  child: InkWell(
-                    hoverColor: Colors.transparent,
-                    focusColor: Colors.transparent,
-                    onTap: () {
-                      if (FirebaseAuth.instance.currentUser == null) {
-                        Get.snackbar('Error', 'Pleae login to access wishlist',
-                            backgroundColor: Colors.red,
-                            colorText: Colors.white);
-                      } else {
-                        if (product.wishList.contains(Uinstance!.uid)) {
-                          removeFromWishList(
-                            product.uid,
-                            Uinstance!.uid,
-                            product.wishList,
-                            UserWishList,
-                          );
-                        } else {
-                          addToWishList(
-                            product.uid,
-                            Uinstance!.uid,
-                            product.wishList,
-                            UserWishList,
-                          );
-                        }
-                      }
-                    },
-                    child: (Uinstance != null
-                        ? AvatarGlow(
+                (FirebaseAuth.instance.currentUser != null
+                    ? Positioned(
+                        right: -60,
+                        top: -60,
+                        child: (InkWell(
+                          hoverColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          onTap: () {
+                            if (FirebaseAuth.instance.currentUser == null) {
+                              Get.snackbar(
+                                  'Error', 'Pleae login to access wishlist',
+                                  backgroundColor: Colors.red,
+                                  colorText: Colors.white);
+                            } else {
+                              if (product.wishList.contains(Uinstance!.uid)) {
+                                removeFromWishList(
+                                  product.uid,
+                                  Uinstance!.uid,
+                                  product.wishList,
+                                  UserWishList,
+                                );
+                              } else {
+                                addToWishList(
+                                  product.uid,
+                                  Uinstance!.uid,
+                                  product.wishList,
+                                  UserWishList,
+                                );
+                              }
+                            }
+                          },
+                          child: AvatarGlow(
                             glowColor: Colors.red,
                             endRadius: 90.0,
                             duration: const Duration(milliseconds: 2000),
@@ -156,25 +154,36 @@ class ProductCards extends StatelessWidget {
                                 radius: 20.0,
                               ),
                             ),
-                          )
-                        : AvatarGlow(
-                            endRadius: 0.0,
-                            child: Material(
-                              elevation: 8.0,
-                              shape: const CircleBorder(),
-                              child: CircleAvatar(
-                                backgroundColor: Colors.grey[100],
-                                child: const Icon(
-                                  Icons.favorite,
-                                  size: 10,
-                                  color: Colors.grey,
-                                ),
-                                radius: 20.0,
-                              ),
+                          ),
+                        )),
+                      )
+                    : Positioned(
+                        right: 10,
+                        top: 0,
+                        child: CircleAvatar(
+                          radius: 15,
+                          backgroundColor: Colors.blueAccent.withAlpha(50),
+                          child: IconButton(
+                            splashColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            onPressed: () {
+                              Get.snackbar('Login Required',
+                                  'Please login to access wishlist',
+                                  colorText: Colors.white,
+                                  backgroundColor: Colors.blueAccent,
+                                  borderRadius: 0,
+                                  margin: const EdgeInsets.all(0));
+                              Get.toNamed(Wrapper.routeName);
+                            },
+                            icon: const Icon(
+                              Icons.favorite,
+                              color: Colors.black,
+                              size: 12,
                             ),
-                          )),
-                  ),
-                ),
+                          ),
+                        ),
+                      )),
               ],
             ),
             const Divider(

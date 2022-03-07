@@ -6,7 +6,6 @@ import 'package:firebase_phone_auth_handler/firebase_phone_auth_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -22,7 +21,6 @@ import 'package:qbazar/repositories/product/product_repository.dart';
 import 'package:qbazar/services/auth_service.dart';
 import 'package:qbazar/widgets/restart.dart';
 import 'blocs/cart/cart_bloc.dart';
-import 'blocs/wishlist/wishlist_bloc.dart';
 import 'config/theme.dart';
 import 'repositories/banners/banners_repository.dart';
 import 'screens/screens.dart';
@@ -61,25 +59,9 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
-  configLoading();
+
 }
 
-void configLoading() {
-  EasyLoading.instance
-    ..displayDuration = const Duration(milliseconds: 2000)
-    ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-    ..loadingStyle = EasyLoadingStyle.dark
-    ..indicatorSize = 45.0
-    ..radius = 10.0
-    ..progressColor = Colors.yellow
-    ..backgroundColor = Colors.green
-    ..indicatorColor = Colors.yellow
-    ..textColor = Colors.yellow
-    ..maskColor = Colors.blue.withOpacity(0.5)
-    ..userInteractions = true
-    ..dismissOnTap = false;
-  // ..customAnimation = CustomAnimation();
-}
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -94,11 +76,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    EasyLoading.addStatusCallback((status) {
-      if (status == EasyLoadingStatus.dismiss) {
-        _timer?.cancel();
-      }
-    });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
@@ -157,7 +134,6 @@ class _MyAppState extends State<MyApp> {
         ],
         child: MultiBlocProvider(
           providers: [
-            BlocProvider(create: (_) => WishlistBloc()..add(StartWishlist())),
             BlocProvider(create: (_) => CartBloc()..add(CartStarted())),
             BlocProvider(
               create: (context) => CheckoutBloc(
@@ -185,7 +161,6 @@ class _MyAppState extends State<MyApp> {
             color: Colors.blueAccent,
             debugShowCheckedModeBanner: false,
             theme: theme(),
-            builder: EasyLoading.init(),
             initialRoute: HomeScreen.routeName,
             onGenerateRoute: AppRouter.onGenerateRoute,
           ),

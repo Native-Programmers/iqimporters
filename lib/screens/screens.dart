@@ -9,4 +9,3 @@ export 'all_products/catalog.dart';
 export 'error/error.dart';
 export 'auth/login.dart';
 export 'auth/signup.dart';
-export 'auth/otp.dart';

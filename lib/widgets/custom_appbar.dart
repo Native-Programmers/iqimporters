@@ -12,6 +12,7 @@ import 'package:qbazar/models/product_model.dart';
 import 'package:qbazar/services/auth_service.dart';
 import 'package:qbazar/widgets/restart.dart';
 import 'package:qbazar/wrapper/wrapper.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:search_page/search_page.dart';
 
 class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
@@ -186,6 +187,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
                             ? InkWell(
                                 onTap: () {
                                   showDialog(
+                                      barrierDismissible: false,
                                       context: context,
                                       builder: (_) => const AlertDialog(
                                             backgroundColor: Colors.transparent,
@@ -203,7 +205,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
                                       colorText: Colors.white,
                                       borderRadius: 0,
                                     );
-                                    RestartWidget.restartApp(context);
+                                    Restart.restartApp();
                                   }).onError((error, stackTrace) {
                                     Navigator.pop(context);
                                     Get.snackbar(

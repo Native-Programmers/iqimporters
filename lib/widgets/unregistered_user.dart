@@ -5,10 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_launch/flutter_launch.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:qbazar/services/auth_service.dart';
 import 'package:qbazar/widgets/custom_appbar.dart';
@@ -296,7 +297,16 @@ class _UnregisteredUserState extends State<UnregisteredUser> {
                                 primary: Colors.green,
                               ),
                               onPressed: () {
-                                EasyLoading.show();
+                                showDialog(
+                                    barrierDismissible: false,
+                                    context: context,
+                                    builder: (_) => const AlertDialog(
+                                          backgroundColor: Colors.transparent,
+                                          elevation: 0,
+                                          content: SpinKitCircle(
+                                            color: Colors.blueGrey,
+                                          ),
+                                        ));
                                 FirebaseFirestore.instance
                                     .collection("userinfo")
                                     .doc(FirebaseAuth.instance.currentUser?.uid)
@@ -308,11 +318,14 @@ class _UnregisteredUserState extends State<UnregisteredUser> {
                                   'city': city.text,
                                   'address': address.text,
                                   'zip': zip.text,
-                                }).then((value) => EasyLoading.showSuccess(
-                                            "Information Added Successfully")
-                                        .onError((error, stackTrace) =>
-                                            EasyLoading.showError(
-                                                "Unable to add information.")));
+                                }).then((value) {
+                                  Navigator.pop(context);
+                                  Get.snackbar('Success',
+                                      "Information Added Successfully");
+                                }).onError((error, stackTrace) {
+                                  Get.snackbar(
+                                      'Error', "Unable to add information.");
+                                });
                               },
                               child: Row(
                                 mainAxisAlignment:
@@ -428,7 +441,6 @@ class _UnregisteredUserState extends State<UnregisteredUser> {
       final reader = FileReader();
       reader.readAsDataUrl(file);
       reader.onLoadEnd.listen((event) {
-        EasyLoading.dismiss();
         onSelected(file);
       });
     });
@@ -446,27 +458,36 @@ class _UnregisteredUserState extends State<UnregisteredUser> {
   void uploadToStorage() {
     final date = DateTime.now();
     final path = date.toString();
-    EasyLoading.show();
-    Future.delayed(const Duration(milliseconds: 500), () {
-      EasyLoading.dismiss();
-    });
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => const AlertDialog(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              content: SpinKitCircle(
+                color: Colors.blueGrey,
+              ),
+            ));
+
     uploadImage(onSelected: (file) {
       FirebaseStorage.instance
           .refFromURL('gs://qbazar-19c41.appspot.com/user_data')
           .child(path)
           .putBlob(file)
           .then((p0) {
-        EasyLoading.dismiss();
+        Navigator.pop(context);
 
         return downloadUrl(path).then((value) {
-          EasyLoading.showSuccess('Image Uploaded');
+          Navigator.pop(context);
+          Get.snackbar('Success', 'Image uploaded successfully');
           setState(() {
             image.text = value;
             print(value);
           });
         });
       }).onError((error, stackTrace) {
-        EasyLoading.showError('Something went wrong');
+        Navigator.pop(context);
+        Get.snackbar('Error', 'Something went wrong! Please try again');
         return Future.delayed(const Duration(milliseconds: 500), () {});
       });
     });

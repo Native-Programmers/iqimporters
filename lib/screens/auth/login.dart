@@ -2,12 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:qbazar/services/auth_service.dart';
 import 'package:qbazar/widgets/restart.dart';
+import 'package:restart_app/restart_app.dart';
 
 var email = TextEditingController();
 var password = TextEditingController();
@@ -60,9 +62,7 @@ class _LoginState extends State<Login> {
                     margin: const EdgeInsets.only(top: 50),
                     height: (kIsWeb && (width > height) ? 150 : 100),
                     width: (kIsWeb && (width > height) ? 150 : 100),
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.asset('assets/images/logo.png')),
+                    child: Image.asset('assets/images/logo.png'),
                   ),
                 ),
                 SizedBox(
@@ -204,8 +204,21 @@ class _LoginState extends State<Login> {
                                               onPressed: () async {
                                                 if (_formKey.currentState!
                                                     .validate()) {
-                                                  Get.snackbar('Processing',
-                                                      'Processing data please wait');
+                                                  showDialog(
+                                                      barrierDismissible: false,
+                                                      context: context,
+                                                      builder: (_) =>
+                                                          const AlertDialog(
+                                                            backgroundColor:
+                                                                Colors
+                                                                    .transparent,
+                                                            elevation: 0,
+                                                            content:
+                                                                SpinKitCubeGrid(
+                                                              color: Colors
+                                                                  .blueAccent,
+                                                            ),
+                                                          ));
                                                   await authService
                                                       .signInWithEmailAndPassword(
                                                     email.text,
@@ -213,12 +226,16 @@ class _LoginState extends State<Login> {
                                                     context,
                                                   )
                                                       .then((value) {
+                                                    Navigator.pop(context);
                                                     email.text = '';
                                                     password.text = '';
                                                     RestartWidget.restartApp(
                                                         context);
+                                                    Restart.restartApp();
                                                   }).onError(
                                                           (error, stackTrace) {
+                                                    Navigator.pop(context);
+
                                                     Get.snackbar('Error',
                                                         error.toString());
                                                   });

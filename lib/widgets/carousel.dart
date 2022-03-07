@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 
 class Carousel extends StatelessWidget {
   final String image;
+  var type;
   Carousel({
     required this.image,
+    required this.type,
   });
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Column(
       children: [
         Container(
@@ -19,8 +23,8 @@ class Carousel extends StatelessWidget {
               child: Stack(
                 children: <Widget>[
                   Image.network(image,
-                      fit: (kIsWeb ? BoxFit.fill : BoxFit.cover),
-                      height: (kIsWeb ? 500 : 215),
+                      fit: type,
+                      height: (kIsWeb && (width > height) ? 500 : 215),
                       width: double.infinity),
                 ],
               )),

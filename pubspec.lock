@@ -454,13 +454,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.8"
-  flutter_easyloading:
-    dependency: "direct main"
-    description:
-      name: flutter_easyloading
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.3"
   flutter_facebook_auth:
     dependency: transitive
     description:
@@ -602,13 +595,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_zoom_drawer:
-    dependency: "direct main"
-    description:
-      name: flutter_zoom_drawer
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.3.0"
   flutterfire_ui:
     dependency: "direct main"
     description:

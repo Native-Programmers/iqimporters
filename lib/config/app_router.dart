@@ -16,8 +16,6 @@ class AppRouter {
     // ignore: avoid_print
     print('This is the route name ${settings.name}');
     switch (settings.name) {
-      case PhoneAuth.routeName:
-        return PhoneAuth.route();
       case ForgetPassword.routeName:
         return ForgetPassword.route();
       case Wrapper.routeName:

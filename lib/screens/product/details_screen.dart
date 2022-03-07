@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:card_swiper/card_swiper.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,26 +27,24 @@ class DetailsScreen extends StatelessWidget {
   final Product product;
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     final Stream<QuerySnapshot> comments = FirebaseFirestore.instance
         .collection("comments")
         .where('product_id', isEqualTo: product.uid)
         .snapshots();
     return Scaffold(
       appBar: CustomAppBar(
-          title: (kIsWeb
-              ? (product.name.length > 10
-                  ? product.name.substring(0, 11) + '...'
-                  : product.name)
-              : product.name.length > 20
-                  ? product.name.substring(0, 20) + '...'
+          title: (kIsWeb && (width > height)
+              ? (product.name)
+              : product.name.length > 15
+                  ? product.name.substring(0, 15) + '...'
                   : product.name)),
       bottomNavigationBar: BottomAppBar(
         color: Colors.blueAccent,
         child: SizedBox(
-          height: (kIsWeb &&
-                  MediaQuery.of(context).size.height <=
-                      MediaQuery.of(context).size.width
-              ? MediaQuery.of(context).size.height / 20
+          height: (kIsWeb && (width > height)
+              ? MediaQuery.of(context).size.height / 18
               : MediaQuery.of(context).size.height / 15),
           width: double.infinity,
           child: Row(
@@ -134,32 +134,72 @@ class DetailsScreen extends StatelessWidget {
               child: Container(
                 color: Colors.grey[100],
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                width: (kIsWeb
-                    ? MediaQuery.of(context).size.width / 1
-                    : MediaQuery.of(context).size.width),
+                width: MediaQuery.of(context).size.width / 1,
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 0),
-                  child: CarouselSlider(
-                    options: CarouselOptions(
-                      aspectRatio: 1.8,
-                      viewportFraction: 1,
-                      disableCenter: true,
-                      enlargeCenterPage: true,
-                      enableInfiniteScroll: true,
-                      height: (kIsWeb ? 500 : 250),
-                      enlargeStrategy: CenterPageEnlargeStrategy.height,
-                      autoPlay: true,
-                      autoPlayInterval: const Duration(seconds: 10),
+                  child: InkWell(
+                    onTap: () {
+                      showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                                content: SizedBox(
+                                  height: MediaQuery.of(context).size.height,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Swiper(
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return CachedNetworkImage(
+                                        imageUrl: product.imageUrl[index],
+                                        fit: BoxFit.fill,
+                                        progressIndicatorBuilder:
+                                            (context, url, downloadProgress) =>
+                                                Container(
+                                          alignment: Alignment.center,
+                                          height: 50,
+                                          width: 50,
+                                          child: CircularProgressIndicator(
+                                              value: downloadProgress.progress),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
+                                      );
+                                    },
+                                    autoplay: true,
+                                    autoplayDelay: 5000,
+                                    itemCount: product.imageUrl.length,
+                                    scrollDirection: Axis.horizontal,
+                                    pagination: const SwiperPagination(
+                                        alignment: Alignment.centerRight),
+                                    control: const SwiperControl(),
+                                  ),
+                                ),
+                              ));
+                    },
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                        aspectRatio: 1.8,
+                        viewportFraction: 1,
+                        disableCenter: true,
+                        enlargeCenterPage: true,
+                        enableInfiniteScroll: true,
+                        height: (kIsWeb ? 500 : 250),
+                        enlargeStrategy: CenterPageEnlargeStrategy.height,
+                        autoPlay: true,
+                        autoPlayInterval: const Duration(seconds: 10),
+                      ),
+                      items: product.imageUrl.map((item) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Carousel(
+                              type: BoxFit.cover,
+                              image: item,
+                            );
+                          },
+                        );
+                      }).toList(),
                     ),
-                    items: product.imageUrl.map((item) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Carousel(
-                            image: item,
-                          );
-                        },
-                      );
-                    }).toList(),
                   ),
                 ),
               ),
@@ -410,6 +450,7 @@ class DetailsScreen extends StatelessWidget {
 
   Future<void> showCommentBox(BuildContext context) async {
     return await showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (context) {
           return AlertDialog(

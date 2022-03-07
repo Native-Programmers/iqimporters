@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 import 'package:qbazar/blocs/cart/cart_bloc.dart';
 import 'package:qbazar/models/models.dart';
 import 'package:qbazar/repositories/checkout/checkout_repository.dart';
@@ -72,10 +72,10 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     if (state is CheckoutLoaded) {
       try {
         await _checkoutRepository.addCheckout(event.checkout).then((value) {
-          EasyLoading.showSuccess('Order Placed Successfully');
+          Get.snackbar('Success', 'Order placed successfully');
         });
       } catch (_) {
-        EasyLoading.showError('Something went wrong. Please try again');
+        Get.snackbar('Error', 'Unable to place order. Try again later.');
       }
     }
   }

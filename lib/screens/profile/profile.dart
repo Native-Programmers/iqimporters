@@ -3,16 +3,13 @@ import 'dart:html';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_launch/flutter_launch.dart';
-import 'package:flutterfire_ui/firestore.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:qbazar/screens/orders/order_history.dart';
 import 'package:qbazar/services/auth_service.dart';
 import 'package:qbazar/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';
@@ -67,9 +64,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void uploadToStorage() {
     final date = DateTime.now();
     final path = date.toString();
-    EasyLoading.show();
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => const AlertDialog(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              content: SpinKitCircle(
+                color: Colors.blueGrey,
+              ),
+            ));
     Future.delayed(const Duration(milliseconds: 500), () {
-      EasyLoading.dismiss();
+      Navigator.pop(context);
     });
     uploadImage(onSelected: (file) {
       FirebaseStorage.instance
@@ -77,10 +83,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .child(path)
           .putBlob(file)
           .then((p0) {
-        EasyLoading.dismiss();
-
         return downloadUrl(path).then((value) {
-          EasyLoading.showSuccess('Image Uploaded');
+          Get.snackbar('Success', 'Image Uploaded');
           setState(() {
             _image = value;
             FirebaseFirestore.instance
@@ -92,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           });
         });
       }).onError((error, stackTrace) {
-        EasyLoading.showError('Something went wrong');
+        Get.snackbar('Error', 'Something went wrong! Try again later');
         return Future.delayed(const Duration(milliseconds: 500), () {});
       });
     });
@@ -107,7 +111,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final reader = FileReader();
       reader.readAsDataUrl(file);
       reader.onLoadEnd.listen((event) {
-        EasyLoading.dismiss();
         onSelected(file);
       });
     });
@@ -414,7 +417,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       primary: Colors.green,
                                     ),
                                     onPressed: () {
-                                      EasyLoading.show();
+                                      showDialog(
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (_) => const AlertDialog(
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                elevation: 0,
+                                                content: SpinKitCircle(
+                                                  color: Colors.blueGrey,
+                                                ),
+                                              ));
                                       FirebaseFirestore.instance
                                           .collection("userinfo")
                                           .doc(FirebaseAuth
@@ -427,11 +440,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         'city': city.text,
                                         'address': address.text,
                                         'zip': zip.text,
-                                      }).then((value) => EasyLoading.showSuccess(
-                                                  "Information Added Successfully")
-                                              .onError((error, stackTrace) =>
-                                                  EasyLoading.showError(
-                                                      "Unable to add information.")));
+                                      }).then((value) {
+                                        Navigator.pop(context);
+                                        Get.snackbar('Success',
+                                            'Information added successfully',
+                                            backgroundColor: Colors.green,
+                                            colorText: Colors.white,
+                                            borderRadius: 0,
+                                            margin: const EdgeInsets.all(0));
+                                      }).onError((error, stackTrace) {
+                                        Navigator.pop(context);
+                                        Get.snackbar('Error',
+                                            'Unable to add information',
+                                            backgroundColor: Colors.red,
+                                            colorText: Colors.white,
+                                            borderRadius: 0,
+                                            margin: const EdgeInsets.all(0));
+                                      });
                                     },
                                     child: Row(
                                       mainAxisAlignment:
@@ -823,28 +848,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       onPressed: () {
                                         if (_formKey.currentState!.validate()) {
-                                          EasyLoading.show();
+                                          showDialog(
+                                              barrierDismissible: false,
+                                              context: context,
+                                              builder: (_) => const AlertDialog(
+                                                    backgroundColor:
+                                                        Colors.transparent,
+                                                    elevation: 0,
+                                                    content: SpinKitCircle(
+                                                      color: Colors.blueGrey,
+                                                    ),
+                                                  ));
                                           FirebaseFirestore.instance
                                               .collection("userinfo")
                                               .doc(FirebaseAuth
                                                   .instance.currentUser?.uid)
                                               .update({
-                                                'name': name.text,
-                                                'mobile': mobile.text,
-                                                'city': city.text,
-                                                'address': address.text,
-                                                'zip': zip.text,
-                                                'pic': _image,
-                                              })
-                                              .then((value) =>
-                                                  EasyLoading.showSuccess(
-                                                      'Data Updated'))
-                                              .onError((error, stackTrace) =>
-                                                  EasyLoading.showError(
-                                                      'Unable to upload data'));
+                                            'name': name.text,
+                                            'mobile': mobile.text,
+                                            'city': city.text,
+                                            'address': address.text,
+                                            'zip': zip.text,
+                                            'pic': _image,
+                                          }).then((value) {
+                                            Navigator.pop(context);
+                                            Get.snackbar(
+                                                'Success', 'Data updated!');
+                                          }).onError((error, stackTrace) {
+                                            Navigator.pop(context);
+
+                                            Get.snackbar('Error',
+                                                'Unable to update data! Please check your connection');
+                                          });
                                         } else {
-                                          EasyLoading.showInfo(
-                                              'Please fill all fields');
+                                          Get.snackbar('Info',
+                                              'All fields are required');
                                         }
                                       },
                                       child: Row(
